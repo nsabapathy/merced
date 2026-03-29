@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: sqlite:////data/app.db
+      REDIS_URL: redis://redis:6379/0
+      CHROMA_URL: http://chroma:8001
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-fernet-key-change-in-production}
+      FIRST_ADMIN_EMAIL: ${FIRST_ADMIN_EMAIL:-admin@example.com}
+      FIRST_ADMIN_PASSWORD: ${FIRST_ADMIN_PASSWORD:-changeme}
+    volumes:
+      - sqlite_data:/data
+    depends_on:
+      - redis
+      - chroma
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8001"
+    environment:
+      IS_PERSISTENT: "TRUE"
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks:
+      - app-network
+
+volumes:
+  sqlite_data:
+  redis_data:
+  chroma_data:
+
+networks:
+  app-network:
+    driver: bridge

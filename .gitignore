@@ -70,3 +70,6 @@ logs/
 
 # Docker
 .dockerignore
+
+# Claude Code internal state
+.claude/
