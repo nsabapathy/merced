@@ -228,3 +228,21 @@ def user_token(test_user):
 def admin_token(test_admin):
     """Create access token for test admin."""
     return create_access_token(test_admin.id)
+
+
+@pytest.fixture
+def real_client(db_session):
+    """Test client that uses the real get_current_user dependency (no override).
+
+    Use this fixture in wiring tests to verify that the actual FastAPI
+    dependency injection chain works end-to-end. If get_current_user is
+    ever broken at the wiring level, tests using this fixture will catch it
+    while tests using the normal `client` fixture will not.
+    """
+    def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_get_db
+    client = TestClient(app, raise_server_exceptions=True)
+    yield client
+    app.dependency_overrides.clear()

@@ -1,17 +1,21 @@
 """FastAPI dependency injections."""
 from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.services.auth_service import verify_access_token
 from app.models.user import User, Role
 from app.services.user_service import get_user_by_id
 
+_bearer = HTTPBearer()
+
 
 async def get_current_user(
-    token: str = Depends(lambda: None),  # Will be overridden in routes
+    credentials: HTTPAuthorizationCredentials = Depends(_bearer),
     db: Session = Depends(get_db)
 ) -> User:
     """Get current authenticated user from JWT token."""
+    token = credentials.credentials
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
