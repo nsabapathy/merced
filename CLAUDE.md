@@ -12,7 +12,7 @@ A simplified, multi-user AI chat application built with **SvelteKit (frontend)**
 
 ## Tech Stack
 
-- **Frontend**: SvelteKit (Svelte 5.x), TypeScript, Tailwind CSS, Socket.IO client
+- **Frontend**: SvelteKit (Svelte 5.x), TypeScript, Tailwind CSS v4, bits-ui (headless accessible components), Socket.IO client
 - **Backend**: Python 3.12+, FastAPI, SQLAlchemy, Alembic, python-socketio, Redis
 - **Storage**: SQLite (local dev), Azure Blob Storage (files), Chroma (vectors)
 - **Deployment**: Docker Compose (backend, frontend, redis, chroma)

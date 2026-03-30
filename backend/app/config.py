@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     secret_key: str = "your-secret-key-change-in-production"
     encryption_key: str = "your-fernet-key-change-in-production"
     algorithm: str = "HS256"
+    cookie_secure: bool = False  # Set True in production (HTTPS only)
 
     # Token expiry
     access_token_expire_minutes: int = 15

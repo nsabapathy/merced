@@ -95,6 +95,27 @@ async def delete_collection(
     return {"message": "Collection deleted"}
 
 
+@router.get("/{collection_id}/documents", response_model=list[DocumentRead])
+async def list_documents(
+    collection_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """List documents in a collection."""
+    collection = db.query(KnowledgeCollection).filter(
+        KnowledgeCollection.id == collection_id
+    ).first()
+    if not collection:
+        raise HTTPException(status_code=404, detail="Collection not found")
+
+    if not can_access_collection(current_user.id, collection_id, db):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    return db.query(KnowledgeDocument).filter(
+        KnowledgeDocument.collection_id == collection_id
+    ).all()
+
+
 @router.post("/{collection_id}/documents", response_model=DocumentRead)
 async def add_document(
     collection_id: str,

@@ -92,6 +92,29 @@ async def delete_group(
     return {"message": "Group deleted"}
 
 
+@router.get("/{group_id}/members")
+async def list_group_members(
+    group_id: str,
+    current_user: User = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    """List members of a group (admin only)."""
+    group = db.query(Group).filter(Group.id == group_id).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    memberships = db.query(GroupMembership).filter(
+        GroupMembership.group_id == group_id
+    ).all()
+
+    members = []
+    for m in memberships:
+        user = db.query(User).filter(User.id == m.user_id).first()
+        if user:
+            members.append({"id": user.id, "username": user.username, "email": user.email})
+    return members
+
+
 @router.post("/{group_id}/members")
 async def add_group_member(
     group_id: str,

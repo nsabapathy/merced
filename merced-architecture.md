@@ -1,3 +1,4 @@
+
 # Architecture Plan: Simplified AI Chat Application
 
 ## Context
